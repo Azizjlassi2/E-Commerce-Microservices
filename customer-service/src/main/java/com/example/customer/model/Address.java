@@ -1,6 +1,7 @@
 package com.example.customer.model;
 
-import jakarta.persistence.Entity;
+import org.springframework.validation.annotation.Validated;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,8 +13,9 @@ import lombok.Setter;
 @Builder
 @Setter
 @Getter
-@Entity
+@Validated
 public class Address {
+
     private String street;
     private String city;
     private String zipcode;

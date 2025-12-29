@@ -1,10 +1,13 @@
-package com.example.customer.model;
+package com.example.product.model;
 
-import jakarta.persistence.Embedded;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,20 +17,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Setter
 @Getter
+@Setter
 @Entity
-public class Customer {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstname;
-    private String lastname;
-    private String email;
+    private String name;
+    private String description;
 
-    @Embedded
-    private Address address;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    private List<Product> products;
 
 }

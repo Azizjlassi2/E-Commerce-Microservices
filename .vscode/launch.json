@@ -30,6 +30,17 @@
       "mainClass": "com.example.customer.CustomerServiceApplication",
       "projectName": "customer-service",
       "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=55577 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=customer-service"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ProductServiceApplication<product-service>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.product.ProductServiceApplication",
+      "projectName": "product-service",
+      "args": "",
       "envFile": "${workspaceFolder}/.env"
     }
   ]

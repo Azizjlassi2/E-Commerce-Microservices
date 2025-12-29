@@ -30,7 +30,10 @@ public class CustomerService {
     }
 
     public CustomerResponse findCustomerById(Long id) {
-        return customerMapper.toCustomerResponse(customerRepository.findById(id).get());
+        var customer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException(
+                String.format("Cannot find customer :: No Customer found with the provided ID :: %s",
+                        id)));
+        return customerMapper.toCustomerResponse(customer);
 
     }
 

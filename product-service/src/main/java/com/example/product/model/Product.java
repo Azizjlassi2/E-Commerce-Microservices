@@ -1,10 +1,13 @@
-package com.example.customer.model;
+package com.example.product.model;
 
-import jakarta.persistence.Embedded;
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,20 +17,22 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Setter
 @Getter
+@Setter
 @Entity
-public class Customer {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstname;
-    private String lastname;
-    private String email;
+    private String name;
+    private String description;
+    private double availableQuantity;
+    private BigDecimal price;
 
-    @Embedded
-    private Address address;
+    @ManyToOne
+    @JoinColumn(name = "catogory_id")
+    private Category category;
 
 }
