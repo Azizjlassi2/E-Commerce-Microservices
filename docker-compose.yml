@@ -1,0 +1,88 @@
+services:
+  mysqldb:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - micro-network
+
+  config-service:
+    build: ./config-service
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - micro-network
+
+  discovery-service:
+    build: ./discovery-service
+    ports:
+      - "8761:8761"
+    depends_on:
+      config-service:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-service:8888
+
+    networks:
+      - micro-network
+
+  customer-service:
+    build: ./customer-service
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+    networks:
+      - micro-network
+
+  order-service:
+    build: ./order-service
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+    networks:
+      - micro-network
+
+  product-service:
+    build: ./product-service
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+    networks:
+      - micro-network
+
+networks:
+  micro-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

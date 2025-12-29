@@ -2,6 +2,7 @@ package com.example.product.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,8 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Long> createProduct(@RequestBody @Valid ProductRequest request) {
+    public ResponseEntity<Long> createProduct(
+            @RequestBody @Valid ProductRequest request) {
 
         return ResponseEntity.ok(productService.createProduct(request));
     }
@@ -31,6 +33,14 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> findProductById(@RequestParam Long id) {
         return ResponseEntity.ok(productService.findProductById(id));
+    }
+
+    @GetMapping("/{id}/check-quantity/{quantity}")
+    public Boolean checkProductQuantity(@PathVariable Long id,
+            @PathVariable double quantity) {
+
+        return productService.checkProductQuantity(id, quantity);
+
     }
 
 }

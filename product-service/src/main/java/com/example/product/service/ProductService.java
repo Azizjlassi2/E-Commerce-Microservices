@@ -25,9 +25,19 @@ public class ProductService {
     public ProductResponse findProductById(Long id) {
         return productRepository.findById(id).map(productMapper::toProductResponse)
                 .orElseThrow(() -> new ProductNotFoundException(String.format(
-                        "Cannot update customer :: No Customer found with the provided ID :: %s",
+                        "Cannot update product :: No Product found with the provided ID :: %s",
                         id)));
 
+    }
+
+    public Boolean checkProductQuantity(Long id, double quantity) {
+
+        var product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(String.format(
+                        "Cannot check quantity :: No Product found with the provided ID :: %s",
+                        id)));
+
+        return product.getAvailableQuantity() >= quantity;
     }
 
 }
