@@ -41,10 +41,3 @@ Ce projet implémente une architecture microservices complète, couvrant les bri
 - Tracing distribué avec Zipkin.
 
 ---
-
-## 🧩 Installation & Setup (local)
-
-1. Cloner le repo
-   ```bash
-   git clone <lien-du-repo>
-   ```
