@@ -34,11 +34,14 @@ jobs:
           timeout 60 bash -c \
             'until curl -s http://localhost:8761/actuator/health | grep UP; do echo "Waiting for eureka…"; sleep 5; done'
 
-      - name: Smoke test
-        run: |
-          curl -f http://localhost:8081/actuator/health
-          curl -f http://localhost:8082/actuator/health
-          curl -f http://localhost:8083/actuator/health
+      - name: Docker Compose Health Check
+        uses: jaracogmbh/docker-compose-health-check-action@v1.0.0
+        with:
+          max-retries: 30
+          retry-interval: 10
+          compose-file: "docker-compose.yml"
+          skip-exited: "true"
+          skip-no-healthcheck: "true"
 
       - name: Teardown
         if: always()
