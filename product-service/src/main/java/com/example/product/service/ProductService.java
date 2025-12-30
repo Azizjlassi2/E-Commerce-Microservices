@@ -1,5 +1,8 @@
 package com.example.product.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.example.product.dto.request.ProductRequest;
@@ -27,6 +30,12 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException(String.format(
                         "Cannot update product :: No Product found with the provided ID :: %s",
                         id)));
+
+    }
+
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAll().stream().map(productMapper::toProductResponse)
+                .collect(Collectors.toList());
 
     }
 
