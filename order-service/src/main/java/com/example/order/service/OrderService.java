@@ -34,6 +34,9 @@ public class OrderService {
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
 
+    // TODO : implement the purchase logic in the product service :: substruct the
+    // quantity for each product ...
+
     public Long createOrder(OrderRequest request) {
 
         // check the customer
