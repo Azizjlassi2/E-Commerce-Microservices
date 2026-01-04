@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.example.order.clients.customer.CustomerClient;
+import com.example.order.clients.customer.dto.response.CustomerResponse;
+import com.example.order.clients.payment.PaymentClient;
+import com.example.order.clients.payment.dto.request.PaymentRequest;
 import com.example.order.clients.product.ProductClient;
 import com.example.order.clients.product.dto.request.ProductPurchaseRequest;
 import com.example.order.clients.product.dto.response.ProductPurchaseResponse;
@@ -30,6 +33,8 @@ public class OrderService {
 
         private final CustomerClient customerClient;
         private final ProductClient productClient;
+        private final PaymentClient paymentClient;
+
         private final OrderRepository orderRepository;
         private final OrderMapper orderMapper;
         private final OrderLineService orderLineService;
@@ -77,7 +82,18 @@ public class OrderService {
 
                 }
 
-                // TODO start payment process -> payment-ms
+                // start payment process -> payment-ms
+
+                paymentClient.requestOrderPayment(PaymentRequest.builder()
+                                .orderId(order.getId())
+                                .orderReference(order.getReference())
+                                .paymentMethod(order.getPaymentMethod())
+                                .amount(order.getAmount())
+                                .customer(CustomerResponse.builder().id(customer.getId())
+                                                .email(customer.getEmail())
+                                                .firstname(customer.getFirstname())
+                                                .lastname(customer.getLastname()).build())
+                                .build());
 
                 // send the order confirmation -> notification-ms
                 orderProducer.sendOrderConfirmation(OrderConfirmation.builder()

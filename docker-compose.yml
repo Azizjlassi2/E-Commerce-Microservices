@@ -108,7 +108,12 @@ services:
       - "8084:8084"
     networks:
       - micro-network
-
+  mail-dev:
+    container_name: ms_mail_dev
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
   product-service:
     build: ./product-service
     depends_on:
