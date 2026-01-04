@@ -8,13 +8,14 @@ import org.springframework.stereotype.Service;
 
 import com.example.order.clients.customer.CustomerClient;
 import com.example.order.clients.product.ProductClient;
+import com.example.order.clients.product.dto.request.ProductPurchaseRequest;
+import com.example.order.clients.product.dto.response.ProductPurchaseResponse;
 import com.example.order.clients.product.dto.response.ProductResponse;
 import com.example.order.dto.request.OrderLineRequest;
 import com.example.order.dto.request.OrderRequest;
 import com.example.order.dto.request.PurchaseRequest;
 import com.example.order.dto.response.OrderResponse;
 import com.example.order.exceptions.CustomerNotFoundException;
-import com.example.order.exceptions.ProductQuantityException;
 import com.example.order.mapper.OrderMapper;
 import com.example.order.producer.OrderConfirmation;
 import com.example.order.producer.OrderProducer;
@@ -27,73 +28,79 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final CustomerClient customerClient;
-    private final ProductClient productClient;
-    private final OrderRepository orderRepository;
-    private final OrderMapper orderMapper;
-    private final OrderLineService orderLineService;
-    private final OrderProducer orderProducer;
+        private final CustomerClient customerClient;
+        private final ProductClient productClient;
+        private final OrderRepository orderRepository;
+        private final OrderMapper orderMapper;
+        private final OrderLineService orderLineService;
+        private final OrderProducer orderProducer;
 
-    // TODO : implement the purchase logic in the product service :: substruct the
-    // quantity for each product ...
+        public Long createOrder(OrderRequest request) {
 
-    public Long createOrder(OrderRequest request) {
+                // check the customer
+                var customer = this.customerClient
+                                .getCustomerById(request.getCustomerId())
+                                .orElseThrow(() -> new CustomerNotFoundException(
+                                                "Cannot create order :: No Customer exists with the provided ID:: "
+                                                                + request.getCustomerId()));
 
-        // check the customer
-        var customer = this.customerClient.getCustomerById(request.getCustomerId())
-                .orElseThrow(() -> new CustomerNotFoundException(
-                        "Cannot create order :: No Customer exists with the provided ID:: "
-                                + request.getCustomerId()));
+                // puchase the products -> product-ms
 
-        // check the products quantity -> product-ms
-        List<ProductResponse> products = new ArrayList<>();
+                List<ProductPurchaseRequest> purchaseRequests = new ArrayList<>();
+                for (PurchaseRequest p : request.getProducts()) {
+                        purchaseRequests.add(ProductPurchaseRequest.builder()
+                                        .productId(p.getProductId())
+                                        .quantity(p.getQuantity()).build());
 
-        for (var item : request.getProducts()) {
-            if (!this.productClient.checkProductQuantity(item.getProductId(),
-                    item.getQuantity())) {
+                }
 
-                throw new ProductQuantityException(
-                        "Cannot create order :: Product with the provided ID:: "
-                                + item.getProductId()
-                                + " does not have the provided QUANTITY::"
-                                + item.getQuantity());
-            }
-            products.add(
-                    this.productClient.findProductById(item.getProductId()).getBody());
+                List<ProductResponse> products = new ArrayList<>();
+                List<ProductPurchaseResponse> purchaseProductsResponse = this.productClient
+                                .purchaseProducts(purchaseRequests).getBody();
+                purchaseProductsResponse.forEach(p -> {
+                        products.add(ProductResponse.builder().id(p.getProductId())
+                                        .availableQuality(p.getQuantity())
+                                        .name(p.getName()).price(p.getPrice())
+                                        .description(p.getDescription())
+                                        .categoryId(p.getCategoryId()).build());
+                });
+
+                // persist order
+                var order = this.orderRepository.save(orderMapper.toOrder(request));
+
+                // persist order lines
+                for (PurchaseRequest purchaseRequest : request.getProducts()) {
+                        orderLineService.createOrderLine(OrderLineRequest.builder()
+                                        .id(null).orderId(order.getId())
+                                        .productId(purchaseRequest.getProductId())
+                                        .quantity(purchaseRequest.getQuantity()).build());
+
+                }
+
+                // TODO start payment process -> payment-ms
+
+                // send the order confirmation -> notification-ms
+                orderProducer.sendOrderConfirmation(OrderConfirmation.builder()
+                                .customerResponse(customer)
+                                .orderReference(request.getReference())
+                                .totalAmount(request.getAmount()).products(products)
+                                .paymentMethod(request.getPaymentMethod()).build());
+
+                return order.getId();
+
         }
 
-        // persist order
-        var order = this.orderRepository.save(orderMapper.toOrder(request));
+        public List<OrderResponse> findAll() {
 
-        // persist order lines
-        for (PurchaseRequest purchaseRequest : request.getProducts()) {
-            orderLineService.createOrderLine(OrderLineRequest.builder().id(null)
-                    .orderId(order.getId()).productId(purchaseRequest.getProductId())
-                    .quantity(purchaseRequest.getQuantity()).build());
-
+                return orderRepository.findAll().stream()
+                                .map(orderMapper::toOrderResponse)
+                                .collect(Collectors.toList());
         }
 
-        // TODO start payment process -> payment-ms
-
-        // send the order confirmation -> notification-ms
-        orderProducer.sendOrderConfirmation(OrderConfirmation.builder()
-                .customerResponse(customer).orderReference(request.getReference())
-                .totalAmount(request.getAmount()).products(products)
-                .paymentMethod(request.getPaymentMethod()).build());
-
-        return order.getId();
-
-    }
-
-    public List<OrderResponse> findAll() {
-
-        return orderRepository.findAll().stream().map(orderMapper::toOrderResponse)
-                .collect(Collectors.toList());
-    }
-
-    public OrderResponse findOrderById(Long id) {
-        return orderRepository.findById(id).map(orderMapper::toOrderResponse)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("No order found with the provided ID:: %d", id)));
-    }
+        public OrderResponse findOrderById(Long id) {
+                return orderRepository.findById(id).map(orderMapper::toOrderResponse)
+                                .orElseThrow(() -> new EntityNotFoundException(String
+                                                .format("No order found with the provided ID:: %d",
+                                                                id)));
+        }
 }

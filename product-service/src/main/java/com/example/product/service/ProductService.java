@@ -1,16 +1,21 @@
 package com.example.product.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.example.product.dto.request.ProductPurchaseRequest;
 import com.example.product.dto.request.ProductRequest;
+import com.example.product.dto.response.ProductPurchaseResponse;
 import com.example.product.dto.response.ProductResponse;
+import com.example.product.exceptions.ProductInsufficientQuantityException;
 import com.example.product.exceptions.ProductNotFoundException;
 import com.example.product.mapper.ProductMapper;
 import com.example.product.repository.ProductRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -47,6 +52,29 @@ public class ProductService {
                         id)));
 
         return product.getAvailableQuantity() >= quantity;
+    }
+
+    @Transactional
+    public List<ProductPurchaseResponse> purchaseProducts(
+            List<ProductPurchaseRequest> request) {
+
+        var purchaseProducts = new ArrayList<ProductPurchaseResponse>();
+        for (ProductPurchaseRequest prod : request) {
+            if (!checkProductQuantity(prod.getProductId(), prod.getQuantity())) {
+                throw new ProductInsufficientQuantityException(
+                        "Insufficient stock quantity for product ID:: "
+                                + prod.getProductId());
+            }
+
+            var product = productRepository.findById(prod.getProductId()).get();
+            product.setAvailableQuantity(
+                    product.getAvailableQuantity() - prod.getQuantity());
+            productRepository.save(product);
+            purchaseProducts.add(productMapper.toProductPurchaseResponse(product));
+        }
+
+        return purchaseProducts;
+
     }
 
 }

@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.product.dto.request.ProductPurchaseRequest;
 import com.example.product.dto.request.ProductRequest;
+import com.example.product.dto.response.ProductPurchaseResponse;
 import com.example.product.dto.response.ProductResponse;
 import com.example.product.service.ProductService;
 
@@ -32,13 +33,19 @@ public class ProductController {
         return ResponseEntity.ok(productService.createProduct(request));
     }
 
+    @PostMapping("/purchase")
+    public ResponseEntity<List<ProductPurchaseResponse>> purchaseProducts(
+            @RequestBody List<ProductPurchaseRequest> request) {
+        return ResponseEntity.ok(productService.purchaseProducts(request));
+    }
+
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> findProductById(@RequestParam Long id) {
+    public ResponseEntity<ProductResponse> findProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.findProductById(id));
     }
 

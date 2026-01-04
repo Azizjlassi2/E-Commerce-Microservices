@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.example.order.model.PaymentMethod;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
@@ -22,11 +22,11 @@ public class OrderRequest {
     @Positive(message = "Order amount should be positive")
     private BigDecimal amount;
 
-    @NotBlank(message = "Payment Method should be precised")
+    @NotNull(message = "Payment Method should be precised")
+
     private PaymentMethod paymentMethod;
 
-    @NotEmpty(message = "Customer should be present")
-    @NotBlank(message = "Customer should be present")
+    @NotNull(message = "Customer should be present")
     private Long customerId;
 
     @NotEmpty(message = "You should at least purchase one product")
