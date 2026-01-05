@@ -12,5 +12,5 @@ RUN --mount=type=cache,target=/root/.m2 \
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /build/target/*.jar app.jar
-EXPOSE 8085
+EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
