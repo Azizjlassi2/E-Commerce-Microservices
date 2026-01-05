@@ -20,6 +20,10 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * EmailService Handles the sending of various notification emails such as
+ * payment confirmations and order confirmations using Thymeleaf templates.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j

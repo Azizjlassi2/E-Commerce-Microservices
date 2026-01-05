@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
+/**
+ * KafkaPaymentTopicConfig Configuration class for Kafka payment topic.
+ */
 @Configuration
 public class KafkaPaymentTopicConfig {
 

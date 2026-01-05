@@ -6,6 +6,9 @@ import com.example.order.dto.request.OrderRequest;
 import com.example.order.dto.response.OrderResponse;
 import com.example.order.model.Order;
 
+/**
+ * OrderMapper Mapper class for converting between Order entities and DTOs.
+ */
 @Service
 public class OrderMapper {
 

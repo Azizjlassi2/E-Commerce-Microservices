@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Notification Entity representing a notification record in the database.
+ * Stores details about payment and order confirmation notifications.
+ */
 @Getter
 @Setter
 @Builder

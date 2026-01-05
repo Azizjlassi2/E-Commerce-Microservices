@@ -14,6 +14,9 @@ import com.example.order.clients.product.dto.request.ProductPurchaseRequest;
 import com.example.order.clients.product.dto.response.ProductPurchaseResponse;
 import com.example.order.clients.product.dto.response.ProductResponse;
 
+/**
+ * ProductClient Feign client for communicating with the Product Service.
+ */
 @FeignClient(name = "product-service", url = "${application.config.product-url}")
 public interface ProductClient {
 

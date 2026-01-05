@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * OrderProducer Produces order confirmation messages to Kafka topic.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j

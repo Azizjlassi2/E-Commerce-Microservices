@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.example.order.clients.customer.dto.response.CustomerResponse;
 
+/**
+ * CustomerClient Feign client for communicating with the Customer Service.
+ */
 @FeignClient(name = "customer-service", url = "${application.config.customer-url}")
 public interface CustomerClient {
 

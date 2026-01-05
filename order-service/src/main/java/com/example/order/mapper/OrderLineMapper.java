@@ -7,6 +7,10 @@ import com.example.order.dto.response.OrderLineResponse;
 import com.example.order.model.Order;
 import com.example.order.model.OrderLine;
 
+/**
+ * OrderLineMapper Mapper class for converting between OrderLine entities and
+ * DTOs.
+ */
 @Service
 public class OrderLineMapper {
 

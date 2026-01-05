@@ -6,6 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
+/**
+ * OrderConfirmationConverter Converts OrderConfirmation objects to JSON strings
+ * for database storage and vice versa.
+ */
 @Converter(autoApply = false)
 public class OrderConfirmationConverter
         implements AttributeConverter<OrderConfirmation, String> {

@@ -2,6 +2,10 @@ package com.example.notification.service;
 
 import lombok.Getter;
 
+/**
+ * EmailTemplates Enum defining email templates and their subjects for various
+ * notification types.
+ */
 public enum EmailTemplates {
 
     PAYMENT_CONFIRMATION("payment-confirmation.html", "Payment Successfully processed "),

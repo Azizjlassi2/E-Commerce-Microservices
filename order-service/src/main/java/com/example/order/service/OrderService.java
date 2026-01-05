@@ -27,6 +27,10 @@ import com.example.order.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * OrderService Service class for managing orders. Handles order creation,
+ * retrieval, and integration with customer, product, and payment services.
+ */
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -58,7 +62,7 @@ public class OrderService {
                                         .quantity(p.getQuantity()).build());
 
                 }
-
+                // collect purchased products info
                 List<ProductResponse> products = new ArrayList<>();
                 List<ProductPurchaseResponse> purchaseProductsResponse = this.productClient
                                 .purchaseProducts(purchaseRequests).getBody();

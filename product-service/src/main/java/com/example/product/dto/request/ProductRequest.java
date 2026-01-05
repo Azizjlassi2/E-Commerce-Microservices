@@ -2,8 +2,6 @@ package com.example.product.dto.request;
 
 import java.math.BigDecimal;
 
-import org.springframework.data.annotation.ReadOnlyProperty;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -14,7 +12,6 @@ import lombok.Data;
 @Builder
 public class ProductRequest {
 
-    @ReadOnlyProperty
     private Long id;
 
     @NotBlank(message = "Product name is required")
